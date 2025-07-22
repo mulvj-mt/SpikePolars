@@ -1,0 +1,57 @@
+[project]
+name = "SpikePolars"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "boto3>=1.39.10",
+    "polars>=1.31.0",
+]
+
+[tool.poe.tasks.build]
+help = "Runs the sync process"
+cmd = "uv sync"
+
+[tool.poe.tasks.app]
+help = "Runs the code"
+cmd = "uv run main.py"
+
+[tool.poe.tasks.tests]
+help = "Run the tests with coverage"
+cmd = "uv run pytest -vrrP --testdox --cov src tests"
+
+[tool.poe.tasks.formatter]
+help = "Formats files using the Ruff formatter"
+cmd = "uv run ruff format"
+
+[tool.poe.tasks.lint]
+help = "Checks linting using Ruff"
+cmd = "uv run ruff check --fix"
+
+[tool.poe.tasks.audit]
+help = "Audits dependencies for vulnerabilities"
+cmd = "uv run pip-audit"
+
+[tool.poe.tasks.scan]
+help = "Scans the application code for vulnerabilities"
+cmd = "uv run bandit -r src"
+
+[tool.poe.tasks.typing]
+help = "Pre-run checks on typing violations"
+cmd = "uv run mypy --explicit-package-bases src tests"
+
+[tool.poe.tasks.check]
+help = "Run all checks required pre-deployment"
+sequence = ["build", "tests", "lint", "audit", "scan", "typing"]
+
+[dependency-groups]
+dev = [
+    "bandit>=1.8.6",
+    "mypy>=1.17.0",
+    "pip-audit>=2.9.0",
+    "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
+    "pytest-testdox>=3.1.0",
+    "ruff>=0.12.4",
+]
