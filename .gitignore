@@ -87,4 +87,6 @@ dmypy.json
 *.bin
 .vscode/
 .idea
+*.csv
+*.json
 

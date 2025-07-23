@@ -95,9 +95,6 @@ def get_output_path(input_source: str) -> str:
 
 
 if __name__ == '__main__':
-    file_handler = logging.FileHandler('./lambda.log')
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
     data_source = f"s3://{DATA_BUCKET}/source/fake_data.csv"
     schema_source = "schema/schema.json"
     listing = s3.list_objects(Bucket=DATA_BUCKET)
