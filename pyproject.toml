@@ -6,20 +6,13 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "boto3>=1.39.10",
+    "boto3-stubs>=1.39.12",
     "polars>=1.31.0",
 ]
 
 [tool.poe.tasks.build]
 help = "Runs the sync process"
 cmd = "uv sync"
-
-[tool.poe.tasks.app]
-help = "Runs the code"
-cmd = "uv run main.py"
-
-[tool.poe.tasks.tests]
-help = "Run the tests with coverage"
-cmd = "uv run pytest -vrrP --testdox --cov src tests"
 
 [tool.poe.tasks.formatter]
 help = "Formats files using the Ruff formatter"
@@ -33,17 +26,21 @@ cmd = "uv run ruff check --fix"
 help = "Audits dependencies for vulnerabilities"
 cmd = "uv run pip-audit"
 
+[tool.bandit]
+exclude_dirs = ['.venv', 'terraform', '.vscode']
+skips = ["B311"]
+
 [tool.poe.tasks.scan]
 help = "Scans the application code for vulnerabilities"
-cmd = "uv run bandit -r src"
+cmd = "uv run bandit -c pyproject.toml -r ."
 
 [tool.poe.tasks.typing]
 help = "Pre-run checks on typing violations"
-cmd = "uv run mypy --explicit-package-bases src tests"
+cmd = "uv run mypy --explicit-package-bases main.py make_data.py"
 
 [tool.poe.tasks.check]
 help = "Run all checks required pre-deployment"
-sequence = ["build", "tests", "lint", "audit", "scan", "typing"]
+sequence = ["build", "lint", "audit", "scan", "typing"]
 
 [dependency-groups]
 dev = [
