@@ -89,4 +89,6 @@ dmypy.json
 .idea
 *.csv
 *.json
+**/.terraform/*
+**/.terraform.lock.hcl
 

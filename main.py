@@ -7,12 +7,16 @@ import boto3
 from botocore.exceptions import ClientError
 import json
 import traceback
+import sys
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 formatter = logging.Formatter(
         '%(asctime)s [%(levelname)s] %(name)s %(funcName)s:%(lineno)d - %(message)s'
     )
+handler = logging.StreamHandler(sys.stdout)
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 DATA_DESTINATION_PREFIX = os.environ["DATA_DESTINATION_PREFIX"]
 DATA_BUCKET = os.environ["DATA_BUCKET"]
@@ -79,7 +83,7 @@ def write_to_parquet(df: pl.LazyFrame, output_path: str) -> dict:
     """Writes a Polars Dataframe to parquet."""
     try:
         logger.info('Commencing write...')
-        df.sink_parquet(output_path, compression='snappy', row_group_size=10000, storage_options=storage_options)
+        df.sink_parquet(output_path, compression='snappy', row_group_size=None, storage_options=storage_options)
         logger.info(f"Successfully written DataFrame to Parquet: {output_path}")
         return {"statusCode": 200, "body": output_path}
     except pl.exceptions.PolarsError as p:
