@@ -17,7 +17,7 @@ formatter = logging.Formatter(
 DATA_DESTINATION_PREFIX = os.environ["DATA_DESTINATION_PREFIX"]
 DATA_BUCKET = os.environ["DATA_BUCKET"]
 
-storage_options = {"aws_region": "eu-north-1"}
+storage_options = {"aws_region": "eu-west-2"}
 
 s3 = boto3.client('s3')
 
