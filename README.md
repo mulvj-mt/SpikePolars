@@ -55,12 +55,34 @@ Terraform configuration.
       terraform apply
     ```
 
-## Execution
+### Execution
 Go to the `Step Functions` page in the AWS console, select `SpikePolars-ecs-task-runner-sfn`, and hit the `Start execution` button. After about a minute,
 you should see a successful run. You should be able to verify that your S3 bucket has a new file called `destination/fake_data.parquet`.
 
-## Cleanup
+### Cleanup
 1. In the `terraform` directory, run `terraform destroy`.
 2. Delete the ECR repository.
 3. Empty and delete the S3 bucket.
+
+## Key Takeaways
+
+### Tool Choice
+The best tool seems to be a task running on ECS. AWS Batch introduces unnecessary complication given that we are orchestrating with Step Functions already. 
+Lambda is harder to configure reliably (especially given Polars' reliance on the underlying CPU architecture) and is limited in execution time and memory. 
+
+### Python Code
+1. Use Polars LazyFrames (and associated `scan` and `sink` methods) for large data files.
+2. Need to think about how to optimise Parquet writing (e.g.using group sizing and compression).
+
+### Docker Build
+1. `buildx` is the correct tool for building image.
+2. It's important to use specify the `linux/amd64` platform.
+3. The Dockerfile should include the environment variable and temp directory for Polars temp files.
+
+### Terraform/AWS Configuration
+The ECS task was deployed on FARGATE. The task and container were configured to use 4096 CPU units (4 vCPU) and 16 GB of memory. The execution time for 
+converting a 1.5GB CSV data file to Parquet was about 27 seconds. It may be possible to optimise the sizing. 
+
+The Step Function IAM role has to be configured carefully to have a policy with PassRole permissions for EventBridge and ECS, as EventBridge is used 
+under the hood.
 
